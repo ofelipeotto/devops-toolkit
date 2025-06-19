@@ -1,0 +1,34 @@
+# ofelipeotto/devops-toolkit/.github/workflows/deploy-site-php.xml
+
+name: Deploy Site PHP
+
+on:
+
+  workflow_call:
+
+    # Inputs
+    inputs:
+      remote_host:
+        required: true
+        type: string
+      remote_user:
+        required: true
+        type: string
+
+    # Secrets
+    secrets:
+      ssh_rsa_key:
+        required: true
+
+jobs:
+
+  deploy-site: 
+
+    name: 🚀 Deploy Site PHP
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🚚 Get Latest Code
+      uses: actions/checkout@v3
+
+    
