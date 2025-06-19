@@ -13,7 +13,7 @@ on:
         type: string
       remote_host:
         required: true
-      site_remote_user:
+      remote_user:
         required: true
 
     # Secrets
@@ -39,7 +39,7 @@ jobs:
       uses: ./.github/actions/sync-files
       with:
         remote_host: ${{ inputs.remote_host }}
-        remote_user: ${{ inputs.site_remote_user }}
+        remote_user: ${{ inputs.remote_user }}
         port: 22
         ssh_key: ${{ secrets.ssh_rsa_key }}
         source: ./site/
@@ -60,7 +60,7 @@ jobs:
     - name: 🛠️ Run Composer Build on Server
       run: |
         ssh -i ~/.ssh/id_rsa -p 22 -o StrictHostKeyChecking=no \
-          ${{ inputs.site_remote_user }}@${{ inputs.remote_host }} << 'EOF'
+          ${{ inputs.remote_user }}@${{ inputs.remote_host }} << 'EOF'
             cd ~/htdocs
 
             # Instalar Composer localmente se não estiver disponível
