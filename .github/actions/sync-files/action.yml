@@ -1,0 +1,33 @@
+# ofelipeotto/devops-toolkit/.github/actions/sync-files/action.yml
+
+name: 🔄 Sync Files
+
+description: Sincroniza arquivos via SamKirkland/web-deploy
+
+# Inputs
+inputs:
+  ssh_key:
+    required: true
+  remote_host:
+    required: true
+  remote_user:
+    required: true
+  source:
+    required: true
+  port:
+    required: true
+  destination:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: 📂 Sync Files
+      uses: SamKirkland/web-deploy@v1
+      with:
+        target-server: ${{ inputs.remote_host }}
+        remote-user: ${{ inputs.remote_user }}
+        private-ssh-key: ${{ inputs.ssh_key }}
+        ssh-port: ${{ inputs.port }}
+        source-path: ${{ inputs.source }}
+        destination-path: ${{ inputs.destination }}
