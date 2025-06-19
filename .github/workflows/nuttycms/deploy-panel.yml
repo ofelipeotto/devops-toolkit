@@ -10,8 +10,10 @@ on:
     inputs:
       remote_host:
         required: true
+        type: string
       remote_user:
         required: true
+        type: string
 
     # Secrets
     secrets:
