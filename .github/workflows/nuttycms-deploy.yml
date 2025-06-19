@@ -1,6 +1,6 @@
-# ofelipeotto/devops-toolkit/.github/workflows/nuttycms-deploy-panel.yml
+# ofelipeotto/devops-toolkit/.github/workflows/nuttycms-deploy.yml
 
-name: Deploy Panel
+name: Deploy Nutty CMS
 
 on:
 
