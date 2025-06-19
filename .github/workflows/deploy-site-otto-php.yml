@@ -24,7 +24,7 @@ jobs:
 
   deploy-site: 
 
-    name: 🚀 Deploy Site PHP
+    name: 🚀 Deploy Site Otto PHP
     runs-on: ubuntu-latest
 
     steps:
