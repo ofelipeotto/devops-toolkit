@@ -80,5 +80,5 @@ jobs:
             fi
 
             php composer install --no-dev --optimize-autoloader
-            php composer setup:prod
+            php composer setup
         EOF
