@@ -8,9 +8,6 @@ on:
 
     # Inputs
     inputs:
-      environment:
-        required: true
-        type: string
       remote_host:
         required: true
       remote_user:
@@ -71,5 +68,5 @@ jobs:
             fi
 
             php composer install --no-dev --optimize-autoloader
-            php composer setup${{ inputs.environment }}
+            php composer setup
         EOF
