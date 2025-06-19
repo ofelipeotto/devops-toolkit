@@ -1,4 +1,4 @@
-# ofelipeotto/devops-toolkit/.github/workflows/nuttycms-deploy-panel.yml
+# ofelipeotto/devops-toolkit/github/workflows/nuttycms-deploy-panel.yml
 
 name: Deploy Panel
 
@@ -58,7 +58,7 @@ jobs:
     # Sync files
 
     - name: 📦 Sync Files
-      uses: ofelipeotto/devops-toolkit/.github/actions/sync-files
+      uses: ofelipeotto/devops-toolkit/github/actions/sync-files
       with:
         remote_host: ${{ inputs.remote_host }}
         remote_user: ${{ inputs.remote_user }}
