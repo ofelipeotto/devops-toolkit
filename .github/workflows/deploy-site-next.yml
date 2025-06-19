@@ -1,0 +1,47 @@
+# ofelipeotto/devops-toolkit/.github/workflows/deploy-site-otto-php.xml
+
+name: Deploy Site Next.js
+
+on:
+
+  workflow_call:
+
+    # Inputs
+    inputs:
+      remote_host:
+        required: true
+        type: string
+      remote_user:
+        required: true
+        type: string
+
+    # Secrets
+    secrets:
+      ssh_rsa_key:
+        required: true
+
+jobs:
+
+  deploy-site: 
+
+    name: 🚀 Deploy Site PHP
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🚚 Get Latest Code
+      uses: actions/checkout@v3
+
+    #------------------------------------------------------
+    # Sync files
+
+    - name: 📦 Sync Files
+      uses: ofelipeotto/devops-toolkit/.github/actions/sync-files@main
+      with:
+        remote_host: ${{ inputs.remote_host }}
+        remote_user: ${{ inputs.remote_user }}
+        port: 22
+        ssh_key: ${{ secrets.ssh_rsa_key }}
+        source: ./site/
+        destination: ~/htdocs/
+
+    #...
