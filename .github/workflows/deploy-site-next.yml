@@ -14,7 +14,17 @@ on:
       remote_user:
         required: true
         type: string
-
+      port:
+        required: false
+        type: number
+        default: 22
+      source:
+        required: true
+        type: string
+      destination:
+        required: true
+        type: string
+      
     # Secrets
     secrets:
       ssh_rsa_key:
@@ -39,9 +49,9 @@ jobs:
       with:
         remote_host: ${{ inputs.remote_host }}
         remote_user: ${{ inputs.remote_user }}
-        port: 22
+        port: ${{ inputs.port }}
         ssh_key: ${{ secrets.ssh_rsa_key }}
-        source: ./site/
-        destination: ~/htdocs/
+        source: ${{ inputs.source }}
+        destination: ${{ inputs.destination }}
 
     #...

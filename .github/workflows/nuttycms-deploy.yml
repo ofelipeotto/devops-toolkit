@@ -14,6 +14,16 @@ on:
       remote_user:
         required: true
         type: string
+      port:
+        required: false
+        type: number
+        default: 22
+      source:
+        required: true
+        type: string
+      destination:
+        required: true
+        type: string
 
     # Secrets
     secrets:
@@ -45,10 +55,10 @@ jobs:
 
     - name: 🗃️ Backup public/uploads
       run: |
-        ssh -i ~/.ssh/id_rsa -p 22 -o StrictHostKeyChecking=no \
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
           ${{ inputs.remote_user }}@${{ inputs.remote_host }} \
-          "if [ -d ~/htdocs/public/uploads ]; then \
-            mv ~/htdocs/public/uploads ~/uploads-backup && \
+          "if [ -d ${{ inputs.destination }}/public/uploads ]; then \
+            mv ${{ inputs.destination }}/public/uploads ~/uploads-backup && \
             echo '📁 public/uploads directory moved to backup.'; \
           else \
             echo '⚠️ Directory public/uploads does not exist, no backup needed.'; \
@@ -62,19 +72,19 @@ jobs:
       with:
         remote_host: ${{ inputs.remote_host }}
         remote_user: ${{ inputs.remote_user }}
-        port: 22
+        port: ${{ inputs.port }}
         ssh_key: ${{ secrets.ssh_rsa_key }}
-        source: ./panel/
-        destination: ~/htdocs/
+        source: ${{ inputs.source }}
+        destination: ${{ inputs.destination }}
 
     #------------------------------------------------------
     # Run Composer Build on Server
 
     - name: 🛠️ Run Composer Build on Server
       run: |
-        ssh -i ~/.ssh/id_rsa -p 22 -o StrictHostKeyChecking=no \
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
           ${{ inputs.remote_user }}@${{ inputs.remote_host }} << 'EOF'
-            cd ~/htdocs
+            cd ${{ inputs.destination }}
 
             # Instalar Composer localmente se não estiver disponível
             if ! php -r "exit((int) !file_exists('composer'));" ; then
@@ -92,10 +102,10 @@ jobs:
 
     - name: 🔄 Restore public/uploads
       run: |
-        ssh -i ~/.ssh/id_rsa -p 22 -o StrictHostKeyChecking=no \
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
           ${{ inputs.remote_user }}@${{ inputs.remote_host }} \
           "if [ -d ~/uploads-backup ]; then \
-            mv ~/uploads-backup ~/htdocs/public/uploads && \
+            mv ~/uploads-backup ${{ inputs.destination }}/public/uploads && \
             echo '✅ Uploads folder restored from backup.'; \
           else \
             echo '⚠️ No backup found to restore.'; \
@@ -106,11 +116,11 @@ jobs:
 
     - name: 🔐 Setting permissions on /public
       run: |
-        ssh -i ~/.ssh/id_rsa -p 22 -o StrictHostKeyChecking=no \
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
           ${{ inputs.remote_user }}@${{ inputs.remote_host }} \
-          "if [ -d ~/htdocs/public ]; then \
-            find ~/htdocs/public -type d -exec chmod 755 {} \; && \
-            find ~/htdocs/public -type f -exec chmod 644 {} \; && \
+          "if [ -d ${{ inputs.destination }}/public ]; then \
+            find ${{ inputs.destination }}/public -type d -exec chmod 755 {} \; && \
+            find ${{ inputs.destination }}/public -type f -exec chmod 644 {} \; && \
             echo '🔐 Permissions 755 (folders) and 644 (files) applied to /public'; \
           else \
             echo '⚠️ /public directory not found to apply permissions.'; \

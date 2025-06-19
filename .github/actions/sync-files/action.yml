@@ -14,10 +14,12 @@ inputs:
     required: true
   source:
     required: true
-  port:
-    required: true
   destination:
     required: true
+  port:
+    required: false
+    type: number
+    default: 22
 
 runs:
   using: "composite"
@@ -29,5 +31,5 @@ runs:
         remote-user: ${{ inputs.remote_user }}
         private-ssh-key: ${{ inputs.ssh_key }}
         ssh-port: ${{ inputs.port }}
-        source-path: ${{ inputs.source }}
-        destination-path: ${{ inputs.destination }}
+        source-path: ${{ inputs.source }}/
+        destination-path: ${{ inputs.destination }}/

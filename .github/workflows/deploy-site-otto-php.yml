@@ -14,6 +14,16 @@ on:
       remote_user:
         required: true
         type: string
+      port:
+        required: false
+        type: number
+        default: 22
+      source:
+        required: true
+        type: string
+      destination:
+        required: true
+        type: string
 
     # Secrets
     secrets:
@@ -39,10 +49,10 @@ jobs:
       with:
         remote_host: ${{ inputs.remote_host }}
         remote_user: ${{ inputs.remote_user }}
-        port: 22
+        port: ${{ inputs.port }}
         ssh_key: ${{ secrets.ssh_rsa_key }}
-        source: ./site/
-        destination: ~/htdocs/
+        source: ${{ inputs.source }}
+        destination: ${{ inputs.destination }}
 
     #------------------------------------------------------
     # Setup SSH Key
@@ -58,9 +68,9 @@ jobs:
 
     - name: 🛠️ Run Composer Build on Server
       run: |
-        ssh -i ~/.ssh/id_rsa -p 22 -o StrictHostKeyChecking=no \
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
           ${{ inputs.remote_user }}@${{ inputs.remote_host }} << 'EOF'
-            cd ~/htdocs
+            cd ${{ inputs.destination }}
 
             # Instalar Composer localmente se não estiver disponível
             if ! php -r "exit((int) !file_exists('composer'));" ; then
