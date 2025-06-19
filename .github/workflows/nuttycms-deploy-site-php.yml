@@ -1,4 +1,4 @@
-# ofelipeotto/devops-toolkit/.github/workflows/nuttycms/deploy-site-php.xml
+# ofelipeotto/devops-toolkit/.github/workflows/nuttycms-deploy-site-php.xml
 
 name: Deploy Site PHP
 
