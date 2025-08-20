@@ -114,14 +114,16 @@ jobs:
     #------------------------------------------------------
     # Setting permissions on /public
 
+    # 755 (folders) and 644 (files)
+
     - name: 🔐 Setting permissions on /public
       run: |
         ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
           ${{ inputs.remote_user }}@${{ inputs.remote_host }} \
           "if [ -d ${{ inputs.destination }}/public ]; then \
-            find ${{ inputs.destination }}/public -type d -exec chmod 755 {} \; && \
-            find ${{ inputs.destination }}/public -type f -exec chmod 644 {} \; && \
-            echo '🔐 Permissions 755 (folders) and 644 (files) applied to /public'; \
+            find ${{ inputs.destination }}/public -type d -exec chmod 770 {} \; && \
+            find ${{ inputs.destination }}/public -type f -exec chmod 770 {} \; && \
+            echo '🔐 Permissions 770 (folders) and 770 (files) applied to /public'; \
           else \
             echo '⚠️ /public directory not found to apply permissions.'; \
           fi"
