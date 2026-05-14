@@ -1,6 +1,6 @@
-# ofelipeotto/devops-toolkit/.github/workflows/nuttycms-deploy.yml
+# ofelipeotto/devops-toolkit/.github/workflows/trivon-cloudpanel-deploy-cms.yml
 
-name: Deploy Trivon CMS with CloudPanel
+name: trivon-cloudpanel-deploy
 
 on:
 
@@ -34,7 +34,7 @@ jobs:
 
   deploy-cms: 
 
-    name: 🚀 Deploy CMS
+    name: 🚀 Deploy Trivon CMS
     runs-on: ubuntu-latest
 
     steps:
