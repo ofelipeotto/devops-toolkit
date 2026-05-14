@@ -1,0 +1,129 @@
+# ofelipeotto/devops-toolkit/.github/workflows/nuttycms-deploy.yml
+
+name: Deploy Trivon CMS with CloudPanel
+
+on:
+
+  workflow_call:
+
+    # Inputs
+    inputs:
+      remote_host:
+        required: true
+        type: string
+      remote_user:
+        required: true
+        type: string
+      port:
+        required: false
+        type: number
+        default: 22
+      source:
+        required: true
+        type: string
+      destination:
+        required: true
+        type: string
+
+    # Secrets
+    secrets:
+      ssh_rsa_key:
+        required: true
+
+jobs:
+
+  deploy-cms: 
+
+    name: 🚀 Deploy CMS
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🚚 Get Latest Code
+      uses: actions/checkout@v3
+
+    #------------------------------------------------------
+    # Setup SSH Key
+
+    - name: 🛠️ Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.ssh_rsa_key }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+    #------------------------------------------------------
+    # Backup public/uploads
+
+    - name: 🗃️ Backup public/uploads
+      run: |
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
+          ${{ inputs.remote_user }}@${{ inputs.remote_host }} \
+          "if [ -d ${{ inputs.destination }}/public/uploads ]; then \
+            mv ${{ inputs.destination }}/public/uploads ~/uploads-backup && \
+            echo '📁 public/uploads directory moved to backup.'; \
+          else \
+            echo '⚠️ Directory public/uploads does not exist, no backup needed.'; \
+          fi"
+
+    #------------------------------------------------------
+    # Sync files
+
+    - name: 📦 Sync Files
+      uses: ofelipeotto/devops-toolkit/.github/actions/sync-files@main
+      with:
+        remote_host: ${{ inputs.remote_host }}
+        remote_user: ${{ inputs.remote_user }}
+        port: ${{ inputs.port }}
+        ssh_key: ${{ secrets.ssh_rsa_key }}
+        source: ${{ inputs.source }}
+        destination: ${{ inputs.destination }}
+
+    #------------------------------------------------------
+    # Run Composer Build on Server
+
+    - name: 🛠️ Run Composer Build on Server
+      run: |
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
+          ${{ inputs.remote_user }}@${{ inputs.remote_host }} << 'EOF'
+            cd ${{ inputs.destination }}
+
+            # Instalar Composer localmente se não estiver disponível
+            if ! php -r "exit((int) !file_exists('composer'));" ; then
+              echo "🧰 Installing Composer..."
+              curl -sS https://getcomposer.org/installer | php
+              mv composer.phar composer
+            fi
+
+            php composer install --no-dev --optimize-autoloader
+            php composer setup
+        EOF
+    
+    #------------------------------------------------------
+    # Restore public/uploads
+
+    - name: 🔄 Restore public/uploads
+      run: |
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
+          ${{ inputs.remote_user }}@${{ inputs.remote_host }} \
+          "if [ -d ~/uploads-backup ]; then \
+            mv ~/uploads-backup ${{ inputs.destination }}/public/uploads && \
+            echo '✅ Uploads folder restored from backup.'; \
+          else \
+            echo '⚠️ No backup found to restore.'; \
+          fi"
+
+    #------------------------------------------------------
+    # Setting permissions on /public
+
+    # 755 (folders) and 644 (files)
+
+    - name: 🔐 Setting permissions on /public
+      run: |
+        ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
+          ${{ inputs.remote_user }}@${{ inputs.remote_host }} \
+          "if [ -d ${{ inputs.destination }}/public ]; then \
+            find ${{ inputs.destination }}/public -type d -exec chmod 770 {} \; && \
+            find ${{ inputs.destination }}/public -type f -exec chmod 770 {} \; && \
+            echo '🔐 Permissions 770 (folders) and 770 (files) applied to /public'; \
+          else \
+            echo '⚠️ /public directory not found to apply permissions.'; \
+          fi"
