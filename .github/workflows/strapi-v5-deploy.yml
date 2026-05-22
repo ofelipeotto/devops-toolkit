@@ -119,9 +119,9 @@ jobs:
         ssh -i ~/.ssh/id_rsa -p ${{ inputs.port }} -o StrictHostKeyChecking=no \
           ${{ inputs.remote_user }}@${{ inputs.remote_host }} \
           "if [ -d ${{ inputs.destination }}/public ]; then \
-            find ${{ inputs.destination }}/public -type d -exec chmod 770 {} \; && \
-            find ${{ inputs.destination }}/public -type f -exec chmod 770 {} \; && \
-            echo '🔐 Permissions 770 (folders) and 770 (files) applied to /public'; \
+            find ${{ inputs.destination }}/public -type d -exec chmod 775 {} \; && \
+            find ${{ inputs.destination }}/public -type f -exec chmod 775 {} \; && \
+            echo '🔐 Permissions 775 (folders) and 775 (files) applied to /public'; \
           else \
             echo '⚠️ /public directory not found to apply permissions.'; \
           fi"
