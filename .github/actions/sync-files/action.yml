@@ -1,8 +1,6 @@
-# ofelipeotto/devops-toolkit/.github/actions/sync-files/action.yml
-
 name: 🔄 Sync Files
 
-description: Sincroniza arquivos via SamKirkland/web-deploy
+description: Sincroniza arquivos via rsync
 
 # Inputs
 inputs:
@@ -25,11 +23,12 @@ runs:
   using: "composite"
   steps:
     - name: 📂 Sync Files
-      uses: SamKirkland/web-deploy@v1
+      uses: easingthemes/ssh-deploy@main
       with:
-        target-server: ${{ inputs.remote_host }}
-        remote-user: ${{ inputs.remote_user }}
-        private-ssh-key: ${{ inputs.ssh_key }}
-        ssh-port: ${{ inputs.port }}
-        source-path: ${{ inputs.source }}/
-        destination-path: ${{ inputs.destination }}/
+        SSH_PRIVATE_KEY: ${{ inputs.ssh_key }}
+        REMOTE_HOST: ${{ inputs.remote_host }}
+        REMOTE_USER: ${{ inputs.remote_user }}
+        REMOTE_PORT: ${{ inputs.port }}
+        SOURCE: "${{ inputs.source }}/"
+        TARGET: "${{ inputs.destination }}/"
+        EXCLUDE: "/.git/, /README.md, /readme.md, /.gitignore"
